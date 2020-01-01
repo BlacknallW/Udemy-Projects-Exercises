@@ -1,3 +1,4 @@
 {
-    "mongoURI": "mongodb+srv://BlacknallW:BlacknallW@cluster0-gqhpe.mongodb.net/test?retryWrites=true&w=majority"
+    "mongoURI": "mongodb+srv://BlacknallW:BlacknallW@cluster0-gqhpe.mongodb.net/test?retryWrites=true&w=majority",
+    "jwtSecret": "mysecrettoken"
 }
