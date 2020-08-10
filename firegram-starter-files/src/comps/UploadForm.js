@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { projectFirestore, timestamp } from "../firebase/config";
 
 const UploadForm = () => {
     const [createUsername, setCreateUsername] = useState("");
@@ -33,6 +34,29 @@ const UploadForm = () => {
             setFile(null);
             setError("Please select an image file (png or jpeg)");
         }
+    };
+
+    const submitHandler = async e => {
+        e.preventDefault();
+        await projectFirestore
+            .collection("users")
+            .add({
+                username: createUsername,
+                password: createPassword,
+                email: createEmail,
+                firstName: createFirstName,
+                lastName: createLastName,
+                medicalSchool: createMedicalSchool,
+                schoolVerification: file,
+                isVerified: false,
+                creationDate: timestamp()
+            })
+            .then(() => {
+                console.log("Document successfully written!");
+            })
+            .catch(error => {
+                console.error("Error writing document: ", error);
+            });
     };
 
     return (
@@ -123,7 +147,7 @@ const UploadForm = () => {
                     </div>
                 </div>
                 <div className="field">
-                    <label for="medicalschoolyear" className="label">
+                    <label htmlFor="medicalschoolyear" className="label">
                         Medical School Year
                     </label>
                     <div className="control">
@@ -151,14 +175,14 @@ const UploadForm = () => {
                     <input type="file" onChange={changeHandler} />
                     <div className="output">
                         {error && <div className="error">{error}</div>}
-                        {file && (
-                            <div className="file">
-                                {file.name}
-                            </div>
-                        )}
+                        {file && <div className="file">{file.name}</div>}
                     </div>
                 </div>{" "}
-                <button type="submit" className="button is-success">
+                <button
+                    type="submit"
+                    className="button is-success"
+                    onClick={submitHandler}
+                >
                     Create Account
                 </button>
             </form>
