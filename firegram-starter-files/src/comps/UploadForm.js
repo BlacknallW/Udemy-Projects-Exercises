@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import { projectFirestore, timestamp } from "../firebase/config";
+import {
+    projectFirestore,
+    timestamp,
+    projectStorage,
+} from "../firebase/config";
 
 const UploadForm = () => {
     const [createUsername, setCreateUsername] = useState("");
@@ -8,9 +12,11 @@ const UploadForm = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [createFirstName, setCreateFirstName] = useState("");
     const [createLastName, setCreateLastName] = useState("");
+    const [createMedicalSchoolYear, setCreateMedicalSchoolYear] = useState("")
     const [createMedicalSchool, setCreateMedicalSchool] = useState("");
     const [file, setFile] = useState(null);
     const [error, setError] = useState(null);
+    const [url, setUrl] = useState(null);
 
     const types = ["image/png", "image/jpeg", "application/pdf"];
 
@@ -22,8 +28,17 @@ const UploadForm = () => {
         setCreateFirstName(document.querySelector("#firstname").value);
         setCreateLastName(document.querySelector("#lastname").value);
         setCreateMedicalSchool(document.querySelector("#medicalschool").value);
+        setCreateMedicalSchoolYear(document.querySelector("#medicalschoolyear").value)
     };
 
+    const fileStorage = file => {
+        let storageRef = projectStorage.ref(file.name);
+        storageRef.put(file).then(async () => {
+            const url = await storageRef.getDownloadURL();
+            setUrl(url);
+            console.log(url);
+        });
+    };
     const changeHandler = e => {
         let selected = e.target.files[0];
 
@@ -38,6 +53,8 @@ const UploadForm = () => {
 
     const submitHandler = async e => {
         e.preventDefault();
+
+        fileStorage(file);
         await projectFirestore
             .collection("users")
             .add({
@@ -47,9 +64,10 @@ const UploadForm = () => {
                 firstName: createFirstName,
                 lastName: createLastName,
                 medicalSchool: createMedicalSchool,
-                schoolVerification: file,
+                medicalSchoolYear: createMedicalSchoolYear,
+                schoolVerification: url,
                 isVerified: false,
-                creationDate: timestamp()
+                creationDate: timestamp(),
             })
             .then(() => {
                 console.log("Document successfully written!");
@@ -155,6 +173,7 @@ const UploadForm = () => {
                             id="medicalschoolyear"
                             name="medicalschoolyear"
                             className="input is-rounded"
+                            onChange={e =>updateValues()}
                         >
                             <option value="MS1">MS1</option>
                             <option value="MS2">MS2</option>
