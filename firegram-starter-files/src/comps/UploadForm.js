@@ -3,6 +3,7 @@ import {
     projectFirestore,
     timestamp,
     projectStorage,
+    projectAuth,
 } from "../firebase/config";
 
 const UploadForm = () => {
@@ -12,11 +13,12 @@ const UploadForm = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [createFirstName, setCreateFirstName] = useState("");
     const [createLastName, setCreateLastName] = useState("");
-    const [createMedicalSchoolYear, setCreateMedicalSchoolYear] = useState("")
+    const [createMedicalSchoolYear, setCreateMedicalSchoolYear] = useState("");
     const [createMedicalSchool, setCreateMedicalSchool] = useState("");
     const [file, setFile] = useState(null);
     const [error, setError] = useState(null);
     const [url, setUrl] = useState(null);
+    const [validationError, setValidationError] = useState(null);
 
     const types = ["image/png", "image/jpeg", "application/pdf"];
 
@@ -28,7 +30,9 @@ const UploadForm = () => {
         setCreateFirstName(document.querySelector("#firstname").value);
         setCreateLastName(document.querySelector("#lastname").value);
         setCreateMedicalSchool(document.querySelector("#medicalschool").value);
-        setCreateMedicalSchoolYear(document.querySelector("#medicalschoolyear").value)
+        setCreateMedicalSchoolYear(
+            document.querySelector("#medicalschoolyear").value
+        );
     };
 
     const fileStorage = file => {
@@ -55,20 +59,31 @@ const UploadForm = () => {
         e.preventDefault();
 
         fileStorage(file);
+        projectAuth
+            .createUserWithEmailAndPassword(createEmail, createPassword)
+            .catch(error => {
+                let errorCode = error.code;
+                let errorMessage = error.message;
+                setValidationError(errorMessage);
+                console.error(`Error Code: ${errorCode}. ${errorMessage}`);
+            });
         await projectFirestore
             .collection("users")
-            .add({
-                username: createUsername,
-                password: createPassword,
-                email: createEmail,
-                firstName: createFirstName,
-                lastName: createLastName,
-                medicalSchool: createMedicalSchool,
-                medicalSchoolYear: createMedicalSchoolYear,
-                schoolVerification: url,
-                isVerified: false,
-                creationDate: timestamp(),
-            })
+            .doc(createUsername)
+            .set(
+                {
+                    username: createUsername,
+                    email: createEmail,
+                    firstName: createFirstName,
+                    lastName: createLastName,
+                    medicalSchool: createMedicalSchool,
+                    medicalSchoolYear: createMedicalSchoolYear,
+                    schoolVerification: url,
+                    isVerified: false,
+                    creationDate: timestamp(),
+                },
+                { merge: true }
+            )
             .then(() => {
                 console.log("Document successfully written!");
             })
@@ -89,6 +104,7 @@ const UploadForm = () => {
                             id="firstname"
                             value={createFirstName}
                             onChange={e => updateValues()}
+                            required
                         ></input>
                     </div>
                 </div>
@@ -138,6 +154,11 @@ const UploadForm = () => {
                             value={confirmPassword}
                             onChange={e => updateValues()}
                         ></input>
+                        {createPassword !== confirmPassword ? (
+                            <p>Your passwords don't match.</p>
+                        ) : (
+                            <p></p>
+                        )}
                     </div>
                 </div>
                 <div className="field">
@@ -150,6 +171,7 @@ const UploadForm = () => {
                             onChange={e => updateValues()}
                             id="emailAddress"
                         ></input>
+                        {validationError ? <p>{validationError}</p> : <p></p>}
                     </div>
                 </div>
                 <div className="field">
@@ -173,7 +195,7 @@ const UploadForm = () => {
                             id="medicalschoolyear"
                             name="medicalschoolyear"
                             className="input is-rounded"
-                            onChange={e =>updateValues()}
+                            onChange={e => updateValues()}
                         >
                             <option value="MS1">MS1</option>
                             <option value="MS2">MS2</option>
@@ -191,7 +213,7 @@ const UploadForm = () => {
                         acceptance letter, unofficial transcript, or certificate
                         of enrollment
                     </p>
-                    <input type="file" onChange={changeHandler} />
+                    <input type="file" onChange={changeHandler} required />
                     <div className="output">
                         {error && <div className="error">{error}</div>}
                         {file && <div className="file">{file.name}</div>}
