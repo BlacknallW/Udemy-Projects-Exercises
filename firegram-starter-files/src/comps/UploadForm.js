@@ -37,8 +37,18 @@ const UploadForm = () => {
 
     const fileStorage = file => {
         let storageRef = projectStorage.ref(file.name);
+        const collectionRef = projectFirestore
+            .collection("users")
+            .doc(createUsername);
         storageRef.put(file).then(async () => {
             const url = await storageRef.getDownloadURL();
+            collectionRef.set(
+                {
+                    schoolVerification: url,
+                    creationDate: timestamp(),
+                },
+                { merge: true }
+            );
             setUrl(url);
             console.log(url);
         });
@@ -78,9 +88,7 @@ const UploadForm = () => {
                     lastName: createLastName,
                     medicalSchool: createMedicalSchool,
                     medicalSchoolYear: createMedicalSchoolYear,
-                    schoolVerification: url,
                     isVerified: false,
-                    creationDate: timestamp(),
                 },
                 { merge: true }
             )
