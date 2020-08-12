@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { projectStorage, projectFirestore } from "../firebase/config";
 
 const useStorage = file => {

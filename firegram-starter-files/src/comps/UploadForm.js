@@ -17,7 +17,6 @@ const UploadForm = () => {
     const [createMedicalSchool, setCreateMedicalSchool] = useState("");
     const [file, setFile] = useState(null);
     const [error, setError] = useState(null);
-    const [url, setUrl] = useState(null);
     const [validationError, setValidationError] = useState(null);
 
     const types = ["image/png", "image/jpeg", "application/pdf"];
@@ -49,7 +48,6 @@ const UploadForm = () => {
                 },
                 { merge: true }
             );
-            setUrl(url);
             console.log(url);
         });
     };
@@ -103,9 +101,11 @@ const UploadForm = () => {
     return (
         <section className="section box">
             <form>
-                <div className="field">
-                    <label className="label">First Name</label>
-                    <div className="control">
+                <section className="field">
+                    <label htmlFor="firstname" className="label">
+                        First Name
+                    </label>
+                    <section className="control">
                         <input
                             className="input is-rounded"
                             type="text"
@@ -114,11 +114,13 @@ const UploadForm = () => {
                             onChange={e => updateValues()}
                             required
                         ></input>
-                    </div>
-                </div>
-                <div className="field">
-                    <label className="label">Last Name</label>
-                    <div className="control">
+                    </section>
+                </section>
+                <section className="field">
+                    <label htmlFor="lastname" className="label">
+                        Last Name
+                    </label>
+                    <section className="control">
                         <input
                             className="input is-rounded"
                             type="text"
@@ -126,11 +128,13 @@ const UploadForm = () => {
                             value={createLastName}
                             onChange={e => updateValues()}
                         ></input>
-                    </div>
-                </div>
-                <div className="field">
-                    <label className="label">Username</label>
-                    <div className="control">
+                    </section>
+                </section>
+                <section className="field">
+                    <label htmlFor="username" className="label">
+                        Username
+                    </label>
+                    <section className="control">
                         <input
                             className="input is-rounded"
                             type="text"
@@ -138,11 +142,13 @@ const UploadForm = () => {
                             value={createUsername}
                             onChange={e => updateValues()}
                         ></input>
-                    </div>
-                </div>
-                <div className="field">
-                    <label className="label">Password</label>
-                    <div className="control">
+                    </section>
+                </section>
+                <section className="field">
+                    <label htmlFor="password" className="label">
+                        Password
+                    </label>
+                    <section className="control">
                         <input
                             className="input is-rounded"
                             type="password"
@@ -150,11 +156,13 @@ const UploadForm = () => {
                             value={createPassword}
                             onChange={e => updateValues()}
                         ></input>
-                    </div>
-                </div>
-                <div className="field">
-                    <label className="label">Confirm Password</label>
-                    <div className="control">
+                    </section>
+                </section>
+                <section className="field">
+                    <label htmlFor="confirmpassword" className="label">
+                        Confirm Password
+                    </label>
+                    <section className="control">
                         <input
                             className="input is-rounded"
                             type="password"
@@ -167,11 +175,13 @@ const UploadForm = () => {
                         ) : (
                             <p></p>
                         )}
-                    </div>
-                </div>
-                <div className="field">
-                    <label className="label">Email Address</label>
-                    <div className="control">
+                    </section>
+                </section>
+                <section className="field">
+                    <label htmlFor="emailAddress" className="label">
+                        Email Address
+                    </label>
+                    <section className="control">
                         <input
                             className="input is-rounded"
                             type="email"
@@ -180,11 +190,13 @@ const UploadForm = () => {
                             id="emailAddress"
                         ></input>
                         {validationError ? <p>{validationError}</p> : <p></p>}
-                    </div>
-                </div>
-                <div className="field">
-                    <label className="label">Medical School</label>
-                    <div className="control">
+                    </section>
+                </section>
+                <section className="field">
+                    <label htmlFor="medicalschool" className="label">
+                        Medical School
+                    </label>
+                    <section className="control">
                         <input
                             className="input is-rounded"
                             type="text"
@@ -192,13 +204,13 @@ const UploadForm = () => {
                             value={createMedicalSchool}
                             onChange={e => updateValues()}
                         ></input>
-                    </div>
-                </div>
-                <div className="field">
+                    </section>
+                </section>
+                <section className="field">
                     <label htmlFor="medicalschoolyear" className="label">
                         Medical School Year
                     </label>
-                    <div className="control">
+                    <section className="control">
                         <select
                             id="medicalschoolyear"
                             name="medicalschoolyear"
@@ -212,21 +224,30 @@ const UploadForm = () => {
                             <option value="Resident">Resident</option>
                             <option value="Fellow">Fellow</option>
                         </select>
-                    </div>
-                </div>
-                <div className="field">
-                    <label className="label">Medical School Verification</label>
+                    </section>
+                </section>
+                <section className="field">
+                    <label htmlFor="filesubmission" className="label">
+                        Medical School Verification
+                    </label>
                     <p style={{ fontSize: "12px" }}>
                         Please submit one of the following: school ID,
                         acceptance letter, unofficial transcript, or certificate
                         of enrollment
                     </p>
-                    <input type="file" onChange={changeHandler} required />
-                    <div className="output">
-                        {error && <div className="error">{error}</div>}
-                        {file && <div className="file">{file.name}</div>}
-                    </div>
-                </div>{" "}
+                    <input
+                        type="file"
+                        onChange={changeHandler}
+                        required
+                        id="filesubmission"
+                    />
+                    <section className="output">
+                        {error && <section className="error">{error}</section>}
+                        {file && (
+                            <section className="file">{file.name}</section>
+                        )}
+                    </section>
+                </section>{" "}
                 <button
                     type="submit"
                     className="button is-success"
