@@ -5,6 +5,7 @@ import {
     projectStorage,
     projectAuth,
 } from "../firebase/config";
+import emailjs from "emailjs-com";
 
 const UploadForm = () => {
     const [createUsername, setCreateUsername] = useState("");
@@ -63,6 +64,19 @@ const UploadForm = () => {
         }
     };
 
+    const sendVerificationEmail = async () => {
+        const template_params = {
+            email: createEmail,
+            to_name: createFirstName,
+            message_html: "Welcome to GABA!",
+        };
+
+        const service_id = "default_service";
+        const template_id = "template_wI6uIxWm";
+        const user_id = "user_f73GApkRJtLhlOTpAdhQN";
+        await emailjs.send(service_id, template_id, template_params, user_id);
+    };
+
     const submitHandler = async e => {
         e.preventDefault();
 
@@ -91,6 +105,7 @@ const UploadForm = () => {
                 { merge: true }
             )
             .then(() => {
+                sendVerificationEmail();
                 console.log("Document successfully written!");
             })
             .catch(error => {
@@ -127,6 +142,7 @@ const UploadForm = () => {
                             id="lastname"
                             value={createLastName}
                             onChange={e => updateValues()}
+                            required
                         ></input>
                     </section>
                 </section>
@@ -141,6 +157,7 @@ const UploadForm = () => {
                             id="username"
                             value={createUsername}
                             onChange={e => updateValues()}
+                            required
                         ></input>
                     </section>
                 </section>
@@ -153,8 +170,10 @@ const UploadForm = () => {
                             className="input is-rounded"
                             type="password"
                             id="password"
+                            autoComplete="new-password"
                             value={createPassword}
                             onChange={e => updateValues()}
+                            required
                         ></input>
                     </section>
                 </section>
@@ -167,8 +186,10 @@ const UploadForm = () => {
                             className="input is-rounded"
                             type="password"
                             id="confirmPassword"
+                            autoComplete="new-password"
                             value={confirmPassword}
                             onChange={e => updateValues()}
+                            required
                         ></input>
                         {createPassword !== confirmPassword ? (
                             <p>Your passwords don't match.</p>
@@ -185,9 +206,11 @@ const UploadForm = () => {
                         <input
                             className="input is-rounded"
                             type="email"
+                            autoComplete="email"
                             value={createEmail}
                             onChange={e => updateValues()}
                             id="emailAddress"
+                            required
                         ></input>
                         {validationError ? <p>{validationError}</p> : <p></p>}
                     </section>
@@ -203,6 +226,7 @@ const UploadForm = () => {
                             id="medicalschool"
                             value={createMedicalSchool}
                             onChange={e => updateValues()}
+                            required
                         ></input>
                     </section>
                 </section>
