@@ -75,46 +75,71 @@ const UploadForm = () => {
         const template_id = "template_wI6uIxWm";
         const user_id = "user_f73GApkRJtLhlOTpAdhQN";
         await emailjs.send(service_id, template_id, template_params, user_id);
+        console.log("Email sent successfully to ", createEmail);
     };
 
-    const submitHandler = async e => {
-        e.preventDefault();
+    const createUser = async () => {
+        await projectAuth.createUserWithEmailAndPassword(
+            createEmail,
+            createPassword
+        );
+    };
 
-        fileStorage(file);
-        projectAuth
-            .createUserWithEmailAndPassword(createEmail, createPassword)
-            .catch(error => {
-                let errorCode = error.code;
-                let errorMessage = error.message;
-                setValidationError(errorMessage);
-                console.error(`Error Code: ${errorCode}. ${errorMessage}`);
-            });
-        await projectFirestore
-            .collection("users")
-            .doc(createUsername)
-            .set(
-                {
-                    username: createUsername,
-                    email: createEmail,
-                    firstName: createFirstName,
-                    lastName: createLastName,
-                    medicalSchool: createMedicalSchool,
-                    medicalSchoolYear: createMedicalSchoolYear,
-                    isVerified: false,
-                },
-                { merge: true }
-            )
-            .then(() => {
-                sendVerificationEmail();
-                console.log("Document successfully written!");
-            })
-            .catch(error => {
-                console.error("Error writing document: ", error);
-            });
+    const userDatabaseEntry = async () => {
+        await projectFirestore.collection("users").doc(createUsername).set(
+            {
+                username: createUsername,
+                email: createEmail,
+                firstName: createFirstName,
+                lastName: createLastName,
+                medicalSchool: createMedicalSchool,
+                medicalSchoolYear: createMedicalSchoolYear,
+                isVerified: false,
+            },
+            { merge: true }
+        );
+        console.log("Document successfully written!");
+    };
+
+    const submitHandler = e => {
+        e.preventDefault();
+        try {
+            createUser()
+                .catch(error => {
+                    let errorCode = error.code;
+                    let errorMessage = error.message;
+                    setValidationError(errorMessage);
+                    console.error(`Error Code: ${errorCode}. ${errorMessage}`);
+                    throw error;
+                })
+                .then(() => {
+                    fileStorage(file);
+                })
+                .catch(error => {
+                    console.error(error);
+                })
+                .then(async () => {
+                    await userDatabaseEntry();
+                })
+                .catch(error => {
+                    console.error(error);
+                })
+                .then(() => {
+                    sendVerificationEmail();
+                })
+                .catch(error => {
+                    console.error("Error sending email", error);
+                });
+        } catch (error) {
+            console.error("Error writing document: ", error);
+        }
     };
 
     return (
         <section className="section box">
+            <p className="has-text-centered" style={{ color: "red" }}>
+                All fields are required for submission.
+            </p>
             <form>
                 <section className="field">
                     <label htmlFor="firstname" className="label">
@@ -257,7 +282,7 @@ const UploadForm = () => {
                     <p style={{ fontSize: "12px" }}>
                         Please submit one of the following: school ID,
                         acceptance letter, unofficial transcript, or certificate
-                        of enrollment
+                        of enrollment.
                     </p>
                     <input
                         type="file"
