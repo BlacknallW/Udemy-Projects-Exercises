@@ -20,6 +20,12 @@ const Modal = ({ selectedImg, setSelectedImg }) => {
                 initial={{ y: "-100vh" }}
                 animate={{ y: 0 }}
             />
+            <button
+                className="button is-success has-text-centered"
+                style={{ display: "block", margin: "auto" }}
+            >
+                Verify
+            </button>
         </motion.div>
     );
 };
