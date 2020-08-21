@@ -6,7 +6,7 @@ const useFirestore = collection => {
 
     useEffect(() => {
         const unsub = projectFirestore
-            .collection(collection)
+            .collection(collection).where("isVerified", "==", false)
             .orderBy("creationDate", "desc")
             .onSnapshot(snap => {
                 let documents = [];
