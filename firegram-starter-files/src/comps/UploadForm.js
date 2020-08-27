@@ -36,12 +36,13 @@ const UploadForm = () => {
     };
 
     const fileStorage = file => {
-        let storageRef = projectStorage.ref(file.name);
+        let storageRef = projectStorage.ref()
+        let fileref = storageRef.child(`files/${createEmail}/${file.name}`);
         const collectionRef = projectFirestore
             .collection("users")
             .doc(createUsername);
-        storageRef.put(file).then(async () => {
-            const url = await storageRef.getDownloadURL();
+        fileref.put(file).then(async () => {
+            const url = await fileref.getDownloadURL();
             collectionRef.set(
                 {
                     schoolVerification: url,

@@ -13,7 +13,7 @@ function App() {
     return (
         <div className="App">
             <Title />
-            {/* <UploadForm /> */}
+<UploadForm />
             <div className="tile is-ancestor">
                 <div className="tile is-4 is-vertical is-parent">
                     <AdminConsole
